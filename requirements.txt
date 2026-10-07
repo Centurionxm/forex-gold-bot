@@ -1,3 +1,4 @@
 streamlit>=1.40
 pandas>=2.2
-metaapi-cloud-sdk>=28.0
+requests>=2.32
+websockets>=15,<16
