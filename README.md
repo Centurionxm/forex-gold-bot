@@ -1,29 +1,51 @@
 # Forex & Gold Rules Bot
 
-Streamlit trading dashboard for MT5/Deriv through MetaApi.
+A Streamlit rule-based trading dashboard using the current Deriv Options API.
+
+## Important execution change
+
+MetaApi and Anthropic have been removed.
+
+This version uses Deriv's authenticated REST + WebSocket Options API. Deriv's current API supports real-time market data, proposals, buying/selling contracts, portfolio monitoring, and demo accounts.
+
+**This is NOT an MT5/CFD bridge.** The bot executes CALL/PUT Options contracts using a USD stake and contract duration. The existing rule-based signals are retained, but MT5-style lots and broker SL/TP are not used.
 
 ## Strategies
 
-1. **EMA Crossover** — EMA 9/21 crossover.
-2. **SMA200 + MACD Histogram + ATR** — trend filter, MACD histogram zero-cross, ATR-above-median volatility filter, and a simple recent H1 supply/demand zone.
-3. **RSI Mean Reversion** — RSI extreme plus EMA confirmation.
+1. EMA Crossover
+2. SMA200 + MACD Histogram + ATR + recent H1 supply/demand
+3. RSI Mean Reversion
 
-The Anthropic/Claude API has been completely removed. The bot now uses deterministic rule-based strategies only.
+## Railway variables
 
-## Environment variables
+Set these in Railway:
 
-- METAAPI_TOKEN
-- METAAPI_ACCOUNT_ID
-- DASH_PASSWORD
-- DB_PATH (optional)
+- `DERIV_API_TOKEN`
+- `DERIV_APP_ID`
+- `DERIV_ACCOUNT_ID`
+- `DASH_PASSWORD`
+- `DB_PATH`
 
-## Run
+Never commit your Deriv token.
 
-```bash
-pip install -r requirements.txt
-streamlit run app.py
+## Deriv setup
+
+1. Log in to the Deriv developer dashboard.
+2. Register an application.
+3. Create a Personal Access Token with trading permission.
+4. Use a demo Options account.
+5. Add the token, App ID and demo account ID to Railway variables.
+
+The app defaults to `frxXAUUSD` and M15. Confirm the symbol is available to your Deriv account before enabling the bot.
+
+## Railway
+
+The repository includes a Procfile:
+
+```
+web: streamlit run app.py --server.address=0.0.0.0 --server.port=$PORT
 ```
 
-Use a demo MT5 account first. Verify the exact symbol name, volume rules, stop distance and trading hours for your broker before enabling live orders.
+## Safety
 
-The bot is not a guarantee of profit. Rule-based signals should be backtested and forward-tested before risking real money.
+Bot starts with trading disabled. Use a demo account first. Rule-based strategies are not guaranteed profitable.
